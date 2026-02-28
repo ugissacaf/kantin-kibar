@@ -1,4 +1,5 @@
 <x-app-layout>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center">
@@ -126,17 +127,17 @@
             </a>
 
             {{-- Delete --}}
-            <form action="{{ route('menus.destroy', $menu) }}"
-                  method="POST"
-                  class="inline"
-                  onsubmit="return confirm('Yakin hapus?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                        class="text-red-600 hover:text-red-800 font-medium">
-                    Delete
-                </button>
-            </form>
+            {{-- Delete --}}
+<form action="{{ route('menus.destroy', $menu) }}"
+      method="POST"
+      class="inline delete-form"> {{-- Tambahkan class 'delete-form' --}}
+    @csrf
+    @method('DELETE')
+    <button type="button" {{-- Ubah type ke 'button' agar tidak langsung submit --}}
+            class="text-red-600 hover:text-red-800 font-medium btn-delete">
+        Delete
+    </button>
+</form>
 
         @endif
 
@@ -166,4 +167,33 @@
 
         </div>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Tangkap semua tombol yang memiliki class btn-delete
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const form = this.closest('.delete-form');
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data menu ini akan dihapus secara permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4f46e5', // Warna indigo-600
+                    cancelButtonColor: '#ef4444',  // Warna red-500
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    borderRadius: '15px'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Jika user klik "Ya", jalankan submit form
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 </x-app-layout>
